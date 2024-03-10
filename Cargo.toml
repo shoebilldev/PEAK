@@ -3,18 +3,22 @@ name = "peak_eml"
 version = "0.1.0"
 authors = ["Cameron M <cmcjnz@gmail.com>"]
 edition = "2021"
-rust-version = "1.74"
+rust-version = "1.76"
 
 
 [dependencies]
 egui = "0.26.0"
 eframe = { version = "0.26.0", default-features = false, features = [
+    "default",
     "accesskit",     # Make egui comptaible with screen readers. NOTE: adds a lot of dependencies.
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
-    "persistence",   # Enable restoring app state when restarting the app.
+    "persistence",   # Enable restoring app state when restarting the app.,
+    "__screenshot", # __screenshot is so we can dump a screenshot using EFRAME_SCREENSHOT_TO
 ] }
 log = "0.4"
+eml-parser = "0.1.4"
+hframe = "0.4.1"
 
 # You only need serde if you want app persistence:
 serde = { version = "1", features = ["derive"] }
