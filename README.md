@@ -52,7 +52,7 @@ We use [Trunk](https://trunkrs.dev/) to build for web target.
 >
 > If `gh-pages` is not available in `Source`, just create and push a branch called `gh-pages` and it should be available.
 
-You can test the template app at <https://tagumi.github.io/peak_eml/>.
+You can test the template app at <https://shoebilldev.github.io/PEAK>.
 
 ## Updating egui
 
