@@ -20,7 +20,7 @@ pub struct PeakApp {
     recipients: String,
     recipients_visible: bool,
     senders: String,
-    senders_visible: bool
+    senders_visible: bool,
 }
 
 impl Default for PeakApp {
@@ -38,7 +38,7 @@ impl Default for PeakApp {
             recipients: "example@recipient.com".to_string(),
             recipients_visible: false,
             senders: "example@sender.com".to_string(),
-            senders_visible: false
+            senders_visible: false,
         }
     }
 }
@@ -66,7 +66,7 @@ impl eframe::App for PeakApp {
     }
 
     /// Called each time the UI needs repainting, which may be many times per second.
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {     
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
 
@@ -123,64 +123,64 @@ impl eframe::App for PeakApp {
             ui.heading("PEAK - Phishing Email Analysis Kit");
 
             egui::Window::new(&self.filename)
-            .open(&mut self.email_body_visible)
-            .scroll2(true)
-            .max_height(800.0)
-            .show(ctx, |ui| {
-                ui.label(&self.email_body);
-            })
-            .aware();
+                .open(&mut self.email_body_visible)
+                .scroll2(true)
+                .max_height(800.0)
+                .show(ctx, |ui| {
+                    ui.label(&self.email_body);
+                })
+                .aware();
 
             hframe::HtmlWindow::new("Email Body")
-            .open(&mut self.email_html_visible)
-            .content(&self.email_body).show(ctx);
+                .open(&mut self.email_html_visible)
+                .content(&self.email_body)
+                .show(ctx);
 
             egui::Window::new("Headers")
-            .open(&mut self.headers_visible)
-            .scroll2(true)
-            .max_height(800.0)
-            .show(ctx, |ui| {
-                //ui.label(&self.headers);
-                let mut i = 1;
-                for header in &self.headers {
-                    //ui.label(format!("{} - {}", header.name, header.value));
-                    egui::CollapsingHeader::new(header.name.to_string())
-                        .id_source(egui::Id::new(i))
-                        .show(ui, |ui| { 
-                            ui.label(header.value.to_string());
-                        });
-                    i += 1;
-                }
-            })
-            .aware();
+                .open(&mut self.headers_visible)
+                .scroll2(true)
+                .max_height(800.0)
+                .show(ctx, |ui| {
+                    //ui.label(&self.headers);
+                    let mut i = 1;
+                    for header in &self.headers {
+                        //ui.label(format!("{} - {}", header.name, header.value));
+                        egui::CollapsingHeader::new(header.name.to_string())
+                            .id_source(egui::Id::new(i))
+                            .show(ui, |ui| {
+                                ui.label(header.value.to_string());
+                            });
+                        i += 1;
+                    }
+                })
+                .aware();
 
             egui::Window::new("Senders")
-            .open(&mut self.senders_visible)
-            .show(ctx, |ui| {
-                ui.label(&self.senders);
-            })
-            .aware();
+                .open(&mut self.senders_visible)
+                .show(ctx, |ui| {
+                    ui.label(&self.senders);
+                })
+                .aware();
 
             egui::Window::new("Recipients")
-            .open(&mut self.recipients_visible)
-            .show(ctx, |ui| {
-                ui.label(&self.recipients);
-            })
-            .aware();
+                .open(&mut self.recipients_visible)
+                .show(ctx, |ui| {
+                    ui.label(&self.recipients);
+                })
+                .aware();
 
             ui.with_layout(egui::Layout::top_down(egui::Align::Center), |ui| {
-    
                 ui.label("Drag-and-drop .eml files onto the window!");
 
                 ui.add_space(20.0);
-    
+
                 // Show dropped files (if any):
                 if !self.dropped_files.is_empty() {
                     ui.group(|ui| {
                         ui.set_max_width(600.0);
 
                         ui.label("Dropped files:");
-    
+
                         for file in &self.dropped_files {
                             let mut info = if let Some(path) = &file.path {
                                 self.nothing_loaded = false;
@@ -191,7 +191,7 @@ impl eframe::App for PeakApp {
                             } else {
                                 "???".to_owned()
                             };
-    
+
                             let mut additional_info = vec![];
                             if !file.mime.is_empty() {
                                 additional_info.push(format!("type: {}", file.mime));
@@ -202,16 +202,21 @@ impl eframe::App for PeakApp {
                             if !additional_info.is_empty() {
                                 info += &format!(" ({})", additional_info.join(", "));
                             }
-    
+
                             ui.label(info);
                         }
                     });
                 }
 
-
                 ui.add_space(20.0);
 
-                if ui.add_enabled(!self.nothing_loaded, egui::Button::new("Analyze!").min_size(egui::Vec2::new(100.0, 50.0))).clicked() {
+                if ui
+                    .add_enabled(
+                        !self.nothing_loaded,
+                        egui::Button::new("Analyze!").min_size(egui::Vec2::new(100.0, 50.0)),
+                    )
+                    .clicked()
+                {
                     self.email_body_visible = true;
                     self.email_html_visible = true;
                     self.headers_visible = true;
@@ -237,27 +242,27 @@ impl eframe::App for PeakApp {
                     let eml = eml_parser::EmlParser::from_string(self.email_raw.clone())
                         .with_body()
                         .parse();
-                    
+
                     if eml.is_ok() {
                         let eml = eml.unwrap();
 
-                        self.email_body = if let Some (body) = eml.body {
+                        self.email_body = if let Some(body) = eml.body {
                             body.to_string()
                         } else {
                             "Failed to parse body".to_owned()
                         };
-                        
+
                         //todo: convert body to html, might already be??
 
                         self.headers = eml.headers;
 
-                        self.recipients = if let Some (recipient) = eml.from {
+                        self.recipients = if let Some(recipient) = eml.from {
                             recipient.to_string()
                         } else {
                             "Failed to parse recipient".to_owned()
                         };
 
-                        self.senders = if let Some (senders) = eml.to {
+                        self.senders = if let Some(senders) = eml.to {
                             senders.to_string()
                         } else {
                             "Failed to parse recipient".to_owned()
@@ -279,7 +284,6 @@ impl eframe::App for PeakApp {
                 powered_by_egui_and_eframe(ui);
                 egui::warn_if_debug_build(ui);
             });
-            
         });
 
         hframe::sync(ctx);
@@ -292,7 +296,6 @@ impl eframe::App for PeakApp {
                 self.dropped_files = i.raw.dropped_files.clone();
             }
         });
-
     }
 }
 
